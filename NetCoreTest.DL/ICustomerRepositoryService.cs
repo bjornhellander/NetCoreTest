@@ -8,5 +8,7 @@ namespace NetCoreTest.DL
         Task<List<CustomerRepositoryData>> GetAllCustomersAsync();
 
         Task<List<int>> CreateCustomersAsync(List<CustomerRepositoryData> customers);
+
+        Task DeleteAllAsync();
     }
 }

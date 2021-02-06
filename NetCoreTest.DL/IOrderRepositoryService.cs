@@ -8,5 +8,7 @@ namespace NetCoreTest.DL
         Task<List<OrderRepositoryData>> GetAllOrdersAsync();
 
         Task<List<int>> CreateOrdersAsync(List<OrderRepositoryData> orders);
+
+        Task DeleteAllAsync();
     }
 }

@@ -40,5 +40,15 @@ namespace NetCoreTest.DL
                 return ids;
             }
         }
+
+        public async Task DeleteAllAsync()
+        {
+            using (var context = new DatabaseContext())
+            {
+                var entities = context.Items;
+                context.Items.RemoveRange(entities);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

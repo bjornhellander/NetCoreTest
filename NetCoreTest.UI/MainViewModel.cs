@@ -31,6 +31,7 @@ namespace NetCoreTest.UI
 
             LoadCommand = new AsyncCommand(DoLoadDataAsync);
             GenerateCommand = new AsyncCommand(DoGenerateDataAsync);
+            ResetCommand = new AsyncCommand(DoResetDataAsync);
         }
 
         public ObservableCollection<ItemViewModel> Items { get; } = new ObservableCollection<ItemViewModel>();
@@ -42,6 +43,8 @@ namespace NetCoreTest.UI
         public ICommand LoadCommand { get; }
 
         public ICommand GenerateCommand { get; }
+
+        public ICommand ResetCommand { get; }
 
         private void AddDesignTimeData()
         {
@@ -175,6 +178,13 @@ namespace NetCoreTest.UI
             {
                 orders.Add(new OrderRepositoryData(orderViewModel.Id, orderViewModel.CustomerViewModel.Id, orderViewModel.ItemViewModel.Id, orderViewModel.Amount));
             }
+        }
+
+        private async Task DoResetDataAsync()
+        {
+            await orderRepositoryService.DeleteAllAsync();
+            await customerRepositoryService.DeleteAllAsync();
+            await itemRepositoryService.DeleteAllAsync();
         }
     }
 }

@@ -55,6 +55,7 @@
         <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
             <Button Content="Load" Command="{Binding LoadCommand}" Margin="10, 0, 10, 0" Padding="5"/>
             <Button Content="Generate" Command="{Binding GenerateCommand}" Margin="10, 0, 10, 0" Padding="5"/>
+            <Button Content="Reset" Command="{Binding ResetCommand}" Margin="10, 0, 10, 0" Padding="5"/>
         </StackPanel>
     </Grid>
 </Window>
