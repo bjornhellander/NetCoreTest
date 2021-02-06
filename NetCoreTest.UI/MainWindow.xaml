@@ -5,7 +5,47 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetCoreTest"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="700" Width="1500">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Grid.Row="0" Grid.Column="0" Header="Items" >
+            <DataGrid>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Width="100"/>
+                    <DataGridTextColumn Header="Name" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="0" Grid.Column="1" Header="Customers" >
+            <DataGrid>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Width="100"/>
+                    <DataGridTextColumn Header="Name" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="0" Grid.Column="2" Header="Orders" >
+            <DataGrid>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Width="100"/>
+                    <DataGridTextColumn Header="Date" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Header="Details" >
+        </GroupBox>
     </Grid>
 </Window>
