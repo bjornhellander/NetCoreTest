@@ -6,8 +6,9 @@ namespace NetCoreTest.UI
     {
         private void OnStartup(object sender, StartupEventArgs e)
         {
-            var window = new MainWindow();
-            window.Show();
+            var mainViewModel = new MainViewModel();
+            var mainWindow = new MainWindow(mainViewModel);
+            mainWindow.Show();
         }
     }
 }
