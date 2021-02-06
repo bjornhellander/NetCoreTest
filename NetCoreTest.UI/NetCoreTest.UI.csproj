@@ -6,4 +6,8 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NetCoreTest.DL\NetCoreTest.DL.csproj" />
+  </ItemGroup>
+
 </Project>

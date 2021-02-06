@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCoreTest.UI", "NetCoreTest.UI\NetCoreTest.UI.csproj", "{066C9E1E-36F6-4088-8D60-59DB3CD0A190}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreTest.UI", "NetCoreTest.UI\NetCoreTest.UI.csproj", "{066C9E1E-36F6-4088-8D60-59DB3CD0A190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCoreTest.DL", "NetCoreTest.DL\NetCoreTest.DL.csproj", "{3DEEBD00-25C1-4C98-A6CB-C5524A71C7F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{066C9E1E-36F6-4088-8D60-59DB3CD0A190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{066C9E1E-36F6-4088-8D60-59DB3CD0A190}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{066C9E1E-36F6-4088-8D60-59DB3CD0A190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DEEBD00-25C1-4C98-A6CB-C5524A71C7F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DEEBD00-25C1-4C98-A6CB-C5524A71C7F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DEEBD00-25C1-4C98-A6CB-C5524A71C7F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DEEBD00-25C1-4C98-A6CB-C5524A71C7F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

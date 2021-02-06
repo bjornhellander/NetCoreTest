@@ -17,6 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <GroupBox Grid.Row="0" Grid.Column="0" Header="Items" >
@@ -50,5 +51,9 @@
 
         <GroupBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Header="Details" >
         </GroupBox>
+
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+            <Button Content="Load" Command="{Binding LoadCommand}"/>
+        </StackPanel>
     </Grid>
 </Window>
