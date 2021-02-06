@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace NetCoreTest
+namespace NetCoreTest.UI
 {
     public partial class MainWindow : Window
     {
