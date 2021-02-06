@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:NetCoreTest.UI"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}"
-        Title="MainWindow" Height="700" Width="1500">
+        Title="MainWindow" Height="700" Width="1500"
+        IsEnabled="{Binding IsEnabled}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="25*"/>

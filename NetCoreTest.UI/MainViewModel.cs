@@ -8,11 +8,12 @@ using System.Windows.Input;
 
 namespace NetCoreTest.UI
 {
-    public class MainViewModel
+    public class MainViewModel : ViewModelBase
     {
         private readonly IItemRepositoryService itemRepositoryService;
         private readonly ICustomerRepositoryService customerRepositoryService;
         private readonly IOrderRepositoryService orderRepositoryService;
+        private bool isEnabled = true;
 
         [Obsolete("Design-time constructor")]
         public MainViewModel()
@@ -32,6 +33,12 @@ namespace NetCoreTest.UI
             LoadCommand = new AsyncCommand(DoLoadDataAsync);
             GenerateCommand = new AsyncCommand(DoGenerateDataAsync);
             ResetCommand = new AsyncCommand(DoResetDataAsync);
+        }
+
+        public bool IsEnabled
+        {
+            get => isEnabled;
+            set => SetProperty(ref isEnabled, value);
         }
 
         public ObservableCollection<ItemViewModel> Items { get; } = new ObservableCollection<ItemViewModel>();
@@ -85,11 +92,14 @@ namespace NetCoreTest.UI
 
         private async Task DoLoadDataAsync()
         {
-            var items = await itemRepositoryService.GetAllItemsAsync();
-            var customers = await customerRepositoryService.GetAllCustomersAsync();
-            var orders = await orderRepositoryService.GetAllOrdersAsync();
+            using (LockUi())
+            {
+                var items = await itemRepositoryService.GetAllItemsAsync();
+                var customers = await customerRepositoryService.GetAllCustomersAsync();
+                var orders = await orderRepositoryService.GetAllOrdersAsync();
 
-            SetData(items, customers, orders);
+                SetData(items, customers, orders);
+            }
         }
 
         private void SetData(
@@ -133,23 +143,26 @@ namespace NetCoreTest.UI
 
         private async Task DoGenerateDataAsync()
         {
-            GetData(out var items, out var customers, out var orders);
-
-            var itemIds = await itemRepositoryService.CreateItemsAsync(items);
-            var customerIds = await customerRepositoryService.CreateCustomersAsync(customers);
-
-            foreach (var order in orders)
+            using (LockUi())
             {
-                var customerIndex = customers.Select((x, i) => (x, i)).Single(y => y.x.Id == order.CustomerId).i;
-                var newCustomerId = customerIds[customerIndex];
-                order.CustomerId = newCustomerId;
+                GetData(out var items, out var customers, out var orders);
 
-                var itemIndex = items.Select((x, i) => (x, i)).Single(y => y.x.Id == order.ItemId).i;
-                var newItemId = itemIds[itemIndex];
-                order.ItemId = newItemId;
+                var itemIds = await itemRepositoryService.CreateItemsAsync(items);
+                var customerIds = await customerRepositoryService.CreateCustomersAsync(customers);
+
+                foreach (var order in orders)
+                {
+                    var customerIndex = customers.Select((x, i) => (x, i)).Single(y => y.x.Id == order.CustomerId).i;
+                    var newCustomerId = customerIds[customerIndex];
+                    order.CustomerId = newCustomerId;
+
+                    var itemIndex = items.Select((x, i) => (x, i)).Single(y => y.x.Id == order.ItemId).i;
+                    var newItemId = itemIds[itemIndex];
+                    order.ItemId = newItemId;
+                }
+
+                await orderRepositoryService.CreateOrdersAsync(orders);
             }
-
-            await orderRepositoryService.CreateOrdersAsync(orders);
         }
 
         private void GetData(
@@ -182,9 +195,57 @@ namespace NetCoreTest.UI
 
         private async Task DoResetDataAsync()
         {
-            await orderRepositoryService.DeleteAllAsync();
-            await customerRepositoryService.DeleteAllAsync();
-            await itemRepositoryService.DeleteAllAsync();
+            using (LockUi())
+            {
+                await orderRepositoryService.DeleteAllAsync();
+                await customerRepositoryService.DeleteAllAsync();
+                await itemRepositoryService.DeleteAllAsync();
+            }
+        }
+
+        private IDisposable LockUi()
+        {
+            var uiLocker = new UiLocker(this);
+            return uiLocker;
+        }
+
+        private class UiLocker : IDisposable
+        {
+            private readonly MainViewModel vm;
+            private bool isDisposed = false;
+
+            public UiLocker(MainViewModel vm)
+            {
+                this.vm = vm;
+                vm.IsEnabled = false;
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!isDisposed)
+                {
+                    if (disposing)
+                    {
+                        vm.IsEnabled = true;
+                    }
+
+                    isDisposed = true;
+                }
+            }
+
+            // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+            // ~UiLocker()
+            // {
+            //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            //     Dispose(disposing: false);
+            // }
+
+            public void Dispose()
+            {
+                // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+                Dispose(disposing: true);
+                GC.SuppressFinalize(this);
+            }
         }
     }
 }
