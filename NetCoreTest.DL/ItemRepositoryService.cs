@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace NetCoreTest.DL
@@ -7,10 +8,18 @@ namespace NetCoreTest.DL
     {
         public Task<List<ItemRepositoryData>> GetAllItemsAsync()
         {
-            var result = new List<ItemRepositoryData>();
-            result.Add(new ItemRepositoryData(1, "Sax"));
-            result.Add(new ItemRepositoryData(2, "Kniv"));
-            return Task.FromResult(result);
+            using (var context = new DatabaseContext())
+            {
+                var result = new List<ItemRepositoryData>();
+
+                var entities = context.Items.OrderBy(x => x.Id).ToList();
+                foreach (var entity in entities)
+                {
+                    result.Add(new ItemRepositoryData(entity.Id, entity.Name));
+                }
+
+                return Task.FromResult(result);
+            }
         }
     }
 }
