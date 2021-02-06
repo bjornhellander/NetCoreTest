@@ -1,7 +1,22 @@
-﻿namespace NetCoreTest.DL
+﻿using System;
+
+namespace NetCoreTest.DL
 {
     public class OrderEntity
     {
+        [Obsolete("Intended for EF only")]
+        public OrderEntity()
+        {
+        }
+
+        public OrderEntity(int id, int customerId, int itemId, int amount)
+        {
+            Id = id;
+            CustomerId = customerId;
+            ItemId = itemId;
+            Amount = amount;
+        }
+
         public int Id { get; set; }
 
         public CustomerEntity Customer { get; set; }

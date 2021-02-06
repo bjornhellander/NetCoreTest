@@ -12,9 +12,9 @@
 
         public int Id { get; }
 
-        public int CustomerId { get; }
+        public int CustomerId { get; set; }
 
-        public int ItemId { get; }
+        public int ItemId { get; set; }
 
         public int Amount { get; }
     }

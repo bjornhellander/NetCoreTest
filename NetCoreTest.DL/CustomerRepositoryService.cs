@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,6 +20,24 @@ namespace NetCoreTest.DL
                 }
 
                 return Task.FromResult(result);
+            }
+        }
+
+        public async Task<List<int>> CreateCustomersAsync(List<CustomerRepositoryData> customers)
+        {
+            using (var context = new DatabaseContext())
+            {
+                var entities = new List<CustomerEntity>();
+                foreach (var customer in customers)
+                {
+                    entities.Add(new CustomerEntity(0, customer.Name));
+                }
+
+                context.AddRange(entities);
+                await context.SaveChangesAsync();
+
+                var ids = entities.Select(x => x.Id).ToList();
+                return ids;
             }
         }
     }

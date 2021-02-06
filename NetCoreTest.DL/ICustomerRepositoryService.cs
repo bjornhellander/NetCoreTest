@@ -6,5 +6,7 @@ namespace NetCoreTest.DL
     public interface ICustomerRepositoryService
     {
         Task<List<CustomerRepositoryData>> GetAllCustomersAsync();
+
+        Task<List<int>> CreateCustomersAsync(List<CustomerRepositoryData> customers);
     }
 }

@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 
 namespace NetCoreTest.DL
 {
-    internal interface IItemRepositoryService
+    public interface IItemRepositoryService
     {
         Task<List<ItemRepositoryData>> GetAllItemsAsync();
+
+        Task<List<int>> CreateItemsAsync(List<ItemRepositoryData> items);
     }
 }

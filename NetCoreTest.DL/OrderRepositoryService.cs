@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,6 +20,24 @@ namespace NetCoreTest.DL
                 }
 
                 return Task.FromResult(result);
+            }
+        }
+
+        public async Task<List<int>> CreateOrdersAsync(List<OrderRepositoryData> orders)
+        {
+            using (var context = new DatabaseContext())
+            {
+                var entities = new List<OrderEntity>();
+                foreach (var order in orders)
+                {
+                    entities.Add(new OrderEntity(0, order.CustomerId, order.ItemId, order.Amount));
+                }
+
+                context.AddRange(entities);
+                await context.SaveChangesAsync();
+
+                var ids = entities.Select(x => x.Id).ToList();
+                return ids;
             }
         }
     }

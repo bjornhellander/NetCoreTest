@@ -10,9 +10,9 @@ namespace NetCoreTest.UI
 {
     public class MainViewModel
     {
-        private readonly ItemRepositoryService itemRepositoryService;
-        private readonly CustomerRepositoryService customerRepositoryService;
-        private readonly OrderRepositoryService orderRepositoryService;
+        private readonly IItemRepositoryService itemRepositoryService;
+        private readonly ICustomerRepositoryService customerRepositoryService;
+        private readonly IOrderRepositoryService orderRepositoryService;
 
         [Obsolete("Design-time constructor")]
         public MainViewModel()
@@ -21,15 +21,16 @@ namespace NetCoreTest.UI
         }
 
         public MainViewModel(
-            ItemRepositoryService itemRepositoryService,
-            CustomerRepositoryService customerRepositoryService,
-            OrderRepositoryService orderRepositoryService)
+            IItemRepositoryService itemRepositoryService,
+            ICustomerRepositoryService customerRepositoryService,
+            IOrderRepositoryService orderRepositoryService)
         {
             this.itemRepositoryService = itemRepositoryService;
             this.customerRepositoryService = customerRepositoryService;
             this.orderRepositoryService = orderRepositoryService;
 
-            LoadCommand = new AsyncCommand(DoLoadData);
+            LoadCommand = new AsyncCommand(DoLoadDataAsync);
+            GenerateCommand = new AsyncCommand(DoGenerateDataAsync);
         }
 
         public ObservableCollection<ItemViewModel> Items { get; } = new ObservableCollection<ItemViewModel>();
@@ -39,6 +40,8 @@ namespace NetCoreTest.UI
         public ObservableCollection<OrderViewModel> Orders { get; } = new ObservableCollection<OrderViewModel>();
 
         public ICommand LoadCommand { get; }
+
+        public ICommand GenerateCommand { get; }
 
         private void AddDesignTimeData()
         {
@@ -77,7 +80,7 @@ namespace NetCoreTest.UI
             return result;
         }
 
-        private async Task DoLoadData()
+        private async Task DoLoadDataAsync()
         {
             var items = await itemRepositoryService.GetAllItemsAsync();
             var customers = await customerRepositoryService.GetAllCustomersAsync();
@@ -123,6 +126,55 @@ namespace NetCoreTest.UI
 
             Orders.Clear();
             Orders.AddRange(orderViewModels);
+        }
+
+        private async Task DoGenerateDataAsync()
+        {
+            GetData(out var items, out var customers, out var orders);
+
+            var itemIds = await itemRepositoryService.CreateItemsAsync(items);
+            var customerIds = await customerRepositoryService.CreateCustomersAsync(customers);
+
+            foreach (var order in orders)
+            {
+                var customerIndex = customers.Select((x, i) => (x, i)).Single(y => y.x.Id == order.CustomerId).i;
+                var newCustomerId = customerIds[customerIndex];
+                order.CustomerId = newCustomerId;
+
+                var itemIndex = items.Select((x, i) => (x, i)).Single(y => y.x.Id == order.ItemId).i;
+                var newItemId = itemIds[itemIndex];
+                order.ItemId = newItemId;
+            }
+
+            await orderRepositoryService.CreateOrdersAsync(orders);
+        }
+
+        private void GetData(
+            out List<ItemRepositoryData> items,
+            out List<CustomerRepositoryData> customers,
+            out List<OrderRepositoryData> orders)
+        {
+            var itemViewModels = CreateDesignTimeItems();
+            var customerViewModels = CreateDesignTimeCustomers();
+            var orderViewModels = CreateDesignTimeOrders(itemViewModels, customerViewModels);
+
+            items = new List<ItemRepositoryData>();
+            foreach (var itemViewModel in itemViewModels)
+            {
+                items.Add(new ItemRepositoryData(itemViewModel.Id, itemViewModel.Name));
+            }
+
+            customers = new List<CustomerRepositoryData>();
+            foreach (var customerViewModel in customerViewModels)
+            {
+                customers.Add(new CustomerRepositoryData(customerViewModel.Id, customerViewModel.Name));
+            }
+
+            orders = new List<OrderRepositoryData>();
+            foreach (var orderViewModel in orderViewModels)
+            {
+                orders.Add(new OrderRepositoryData(orderViewModel.Id, orderViewModel.CustomerViewModel.Id, orderViewModel.ItemViewModel.Id, orderViewModel.Amount));
+            }
         }
     }
 }
