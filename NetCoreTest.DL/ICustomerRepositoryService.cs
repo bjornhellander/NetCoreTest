@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace NetCoreTest.DL
 {
     public interface ICustomerRepositoryService
     {
-        Task<List<CustomerRepositoryData>> GetAllCustomersAsync();
+        Task<List<CustomerRepositoryData>> GetAllCustomersAsync(DbConnection connection, DbTransaction transaction);
 
-        Task<List<int>> CreateCustomersAsync(List<CustomerRepositoryData> customers);
+        Task<List<int>> CreateCustomersAsync(DbConnection connection, DbTransaction transaction, List<CustomerRepositoryData> customers);
 
-        Task DeleteAllAsync();
+        Task DeleteAllAsync(DbConnection connection, DbTransaction transaction);
     }
 }

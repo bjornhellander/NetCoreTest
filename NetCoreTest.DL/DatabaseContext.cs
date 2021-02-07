@@ -1,10 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 namespace NetCoreTest.DL
 {
     public class DatabaseContext : DbContext
     {
         public const string ConnectionString = "Server=(localdb)\\mssqllocaldb;Database=NetCoreTest;Trusted_Connection=True;MultipleActiveResultSets=true";
+        private readonly DbConnection connection;
+
+        public DatabaseContext()
+        {
+            connection = null;
+        }
+
+        public DatabaseContext(DbConnection connection)
+        {
+            this.connection = connection;
+        }
 
         //public DatabaseContext(DbContextOptions<DatabaseContext> options)
         //    : base(options)
@@ -19,7 +31,14 @@ namespace NetCoreTest.DL
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlServer(ConnectionString);
+            if (connection != null)
+            {
+                options.UseSqlServer(connection);
+            }
+            else
+            {
+                options.UseSqlServer(ConnectionString);
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

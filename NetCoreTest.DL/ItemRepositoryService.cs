@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace NetCoreTest.DL
 {
-    public class ItemRepositoryService : IItemRepositoryService
+    public class ItemRepositoryService : RepositoryServiceBase, IItemRepositoryService
     {
-        public Task<List<ItemRepositoryData>> GetAllItemsAsync()
+        public Task<List<ItemRepositoryData>> GetAllItemsAsync(DbConnection connection, DbTransaction transaction)
         {
-            using (var context = GetContext())
+            using (var context = GetContext(connection, transaction))
             {
                 var result = new List<ItemRepositoryData>();
 
@@ -22,9 +23,9 @@ namespace NetCoreTest.DL
             }
         }
 
-        public async Task<List<int>> CreateItemsAsync(List<ItemRepositoryData> items)
+        public async Task<List<int>> CreateItemsAsync(DbConnection connection, DbTransaction transaction, List<ItemRepositoryData> items)
         {
-            using (var context = GetContext())
+            using (var context = GetContext(connection, transaction))
             {
                 var entities = new List<ItemEntity>();
                 foreach (var item in items)
@@ -40,20 +41,14 @@ namespace NetCoreTest.DL
             }
         }
 
-        public async Task DeleteAllAsync()
+        public async Task DeleteAllAsync(DbConnection connection, DbTransaction transaction)
         {
-            using (var context = GetContext())
+            using (var context = GetContext(connection, transaction))
             {
                 var entities = context.Items;
                 context.Items.RemoveRange(entities);
                 await context.SaveChangesAsync();
             }
-        }
-
-        private static DatabaseContext GetContext()
-        {
-            var result = new DatabaseContext();
-            return result;
         }
     }
 }

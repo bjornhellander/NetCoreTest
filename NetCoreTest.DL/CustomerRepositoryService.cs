@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace NetCoreTest.DL
 {
-    public class CustomerRepositoryService : ICustomerRepositoryService
+    public class CustomerRepositoryService : RepositoryServiceBase, ICustomerRepositoryService
     {
-        public Task<List<CustomerRepositoryData>> GetAllCustomersAsync()
+        public Task<List<CustomerRepositoryData>> GetAllCustomersAsync(DbConnection connection, DbTransaction transaction)
         {
-            using (var context = GetContext())
+            using (var context = GetContext(connection, transaction))
             {
                 var result = new List<CustomerRepositoryData>();
 
@@ -22,9 +24,9 @@ namespace NetCoreTest.DL
             }
         }
 
-        public async Task<List<int>> CreateCustomersAsync(List<CustomerRepositoryData> customers)
+        public async Task<List<int>> CreateCustomersAsync(DbConnection connection, DbTransaction transaction, List<CustomerRepositoryData> customers)
         {
-            using (var context = GetContext())
+            using (var context = GetContext(connection, transaction))
             {
                 var entities = new List<CustomerEntity>();
                 foreach (var customer in customers)
@@ -40,20 +42,14 @@ namespace NetCoreTest.DL
             }
         }
 
-        public async Task DeleteAllAsync()
+        public async Task DeleteAllAsync(DbConnection connection, DbTransaction transaction)
         {
-            using (var context = GetContext())
+            using (var context = GetContext(connection, transaction))
             {
                 var entities = context.Customers;
                 context.Customers.RemoveRange(entities);
                 await context.SaveChangesAsync();
             }
-        }
-
-        private static DatabaseContext GetContext()
-        {
-            var result = new DatabaseContext();
-            return result;
         }
     }
 }

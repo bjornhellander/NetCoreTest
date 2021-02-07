@@ -1,4 +1,5 @@
-﻿using NetCoreTest.DL;
+﻿using Microsoft.Data.SqlClient;
+using NetCoreTest.DL;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -101,9 +102,14 @@ namespace NetCoreTest.UI
         {
             using (WithUiLock())
             {
-                var items = await itemRepositoryService.GetAllItemsAsync();
-                var customers = await customerRepositoryService.GetAllCustomersAsync();
-                var orders = await orderRepositoryService.GetAllOrdersAsync();
+                using var connection = new SqlConnection(DatabaseContext.ConnectionString);
+                connection.Open();
+
+                using var transaction = connection.BeginTransaction();
+
+                var items = await itemRepositoryService.GetAllItemsAsync(connection, transaction);
+                var customers = await customerRepositoryService.GetAllCustomersAsync(connection, transaction);
+                var orders = await orderRepositoryService.GetAllOrdersAsync(connection, transaction);
 
                 SetData(items, customers, orders);
             }
@@ -152,10 +158,15 @@ namespace NetCoreTest.UI
         {
             using (WithUiLock())
             {
+                using var connection = new SqlConnection(DatabaseContext.ConnectionString);
+                connection.Open();
+
+                using var transaction = connection.BeginTransaction();
+
                 GetData(out var items, out var customers, out var orders);
 
-                var itemIds = await itemRepositoryService.CreateItemsAsync(items);
-                var customerIds = await customerRepositoryService.CreateCustomersAsync(customers);
+                var itemIds = await itemRepositoryService.CreateItemsAsync(connection, transaction, items);
+                var customerIds = await customerRepositoryService.CreateCustomersAsync(connection, transaction, customers);
 
                 foreach (var order in orders)
                 {
@@ -168,7 +179,9 @@ namespace NetCoreTest.UI
                     order.ItemId = shouldInjectError ? int.MaxValue : newItemId; // !!!!!! CAN INJECT ERROR HERE !!!!!!
                 }
 
-                await orderRepositoryService.CreateOrdersAsync(orders);
+                await orderRepositoryService.CreateOrdersAsync(connection, transaction, orders);
+
+                transaction.Commit();
             }
         }
 
@@ -204,9 +217,16 @@ namespace NetCoreTest.UI
         {
             using (WithUiLock())
             {
-                await orderRepositoryService.DeleteAllAsync();
-                await customerRepositoryService.DeleteAllAsync();
-                await itemRepositoryService.DeleteAllAsync();
+                using var connection = new SqlConnection(DatabaseContext.ConnectionString);
+                connection.Open();
+
+                using var transaction = connection.BeginTransaction();
+
+                await orderRepositoryService.DeleteAllAsync(connection, transaction);
+                await customerRepositoryService.DeleteAllAsync(connection, transaction);
+                await itemRepositoryService.DeleteAllAsync(connection, transaction);
+
+                transaction.Commit();
             }
         }
 
