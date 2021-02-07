@@ -1,4 +1,4 @@
-﻿namespace NetCoreTest.DL
+﻿namespace NetCoreTest.DL.Orders
 {
     public class OrderRepositoryData
     {

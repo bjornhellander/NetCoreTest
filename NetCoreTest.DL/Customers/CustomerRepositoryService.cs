@@ -4,7 +4,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NetCoreTest.DL
+namespace NetCoreTest.DL.Customers
 {
     public class CustomerRepositoryService : RepositoryServiceBase, ICustomerRepositoryService
     {

@@ -1,8 +1,8 @@
-﻿namespace NetCoreTest.DL
+﻿namespace NetCoreTest.DL.Items
 {
-    public class CustomerRepositoryData
+    public class ItemRepositoryData
     {
-        public CustomerRepositoryData(int id, string name)
+        public ItemRepositoryData(int id, string name)
         {
             Id = id;
             Name = name;

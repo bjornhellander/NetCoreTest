@@ -3,34 +3,34 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NetCoreTest.DL
+namespace NetCoreTest.DL.Items
 {
-    public class OrderRepositoryService : RepositoryServiceBase, IOrderRepositoryService
+    public class ItemRepositoryService : RepositoryServiceBase, IItemRepositoryService
     {
-        public Task<List<OrderRepositoryData>> GetAllOrdersAsync(DbConnection connection, DbTransaction transaction)
+        public Task<List<ItemRepositoryData>> GetAllItemsAsync(DbConnection connection, DbTransaction transaction)
         {
             using (var context = GetContext(connection, transaction))
             {
-                var result = new List<OrderRepositoryData>();
+                var result = new List<ItemRepositoryData>();
 
-                var entities = context.Orders.OrderBy(x => x.Id).ToList();
+                var entities = context.Items.OrderBy(x => x.Id).ToList();
                 foreach (var entity in entities)
                 {
-                    result.Add(new OrderRepositoryData(entity.Id, entity.CustomerId, entity.ItemId, entity.Amount));
+                    result.Add(new ItemRepositoryData(entity.Id, entity.Name));
                 }
 
                 return Task.FromResult(result);
             }
         }
 
-        public async Task<List<int>> CreateOrdersAsync(DbConnection connection, DbTransaction transaction, List<OrderRepositoryData> orders)
+        public async Task<List<int>> CreateItemsAsync(DbConnection connection, DbTransaction transaction, List<ItemRepositoryData> items)
         {
             using (var context = GetContext(connection, transaction))
             {
-                var entities = new List<OrderEntity>();
-                foreach (var order in orders)
+                var entities = new List<ItemEntity>();
+                foreach (var item in items)
                 {
-                    entities.Add(new OrderEntity(0, order.CustomerId, order.ItemId, order.Amount));
+                    entities.Add(new ItemEntity(0, item.Name));
                 }
 
                 context.AddRange(entities);
@@ -45,8 +45,8 @@ namespace NetCoreTest.DL
         {
             using (var context = GetContext(connection, transaction))
             {
-                var entities = context.Orders;
-                context.Orders.RemoveRange(entities);
+                var entities = context.Items;
+                context.Items.RemoveRange(entities);
                 await context.SaveChangesAsync();
             }
         }

@@ -1,16 +1,17 @@
-﻿using System;
+﻿using NetCoreTest.DL.Orders;
+using System;
 using System.Collections.ObjectModel;
 
-namespace NetCoreTest.DL
+namespace NetCoreTest.DL.Items
 {
-    public class CustomerEntity
+    public class ItemEntity
     {
         [Obsolete("Intended for EF only")]
-        public CustomerEntity()
+        public ItemEntity()
         {
         }
 
-        public CustomerEntity(int id, string name)
+        public ItemEntity(int id, string name)
         {
             Id = id;
             Name = name;

@@ -1,6 +1,8 @@
-﻿using System;
+﻿using NetCoreTest.DL.Customers;
+using NetCoreTest.DL.Items;
+using System;
 
-namespace NetCoreTest.DL
+namespace NetCoreTest.DL.Orders
 {
     public class OrderEntity
     {

@@ -2,7 +2,7 @@
 using System.Data.Common;
 using System.Threading.Tasks;
 
-namespace NetCoreTest.DL
+namespace NetCoreTest.DL.Items
 {
     public interface IItemRepositoryService
     {

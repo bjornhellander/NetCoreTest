@@ -1,4 +1,6 @@
-﻿using NetCoreTest.DL;
+﻿using NetCoreTest.DL.Customers;
+using NetCoreTest.DL.Items;
+using NetCoreTest.DL.Orders;
 using System.Windows;
 
 namespace NetCoreTest.UI
