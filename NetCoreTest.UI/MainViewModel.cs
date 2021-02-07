@@ -233,21 +233,29 @@ namespace NetCoreTest.UI
             }
         }
 
-        private IDisposable WithUiLock()
+        private UiLock WithUiLock()
         {
-            var uiLocker = new UiLocker(this);
+            var uiLocker = new UiLock(this);
             return uiLocker;
         }
 
-        private class UiLocker : IDisposable
+        private class UiLock : IDisposable
         {
             private readonly MainViewModel vm;
+            private readonly bool prevValue;
             private bool isDisposed = false;
 
-            public UiLocker(MainViewModel vm)
+            public UiLock(MainViewModel vm)
             {
                 this.vm = vm;
+                prevValue = vm.IsEnabled;
                 vm.IsEnabled = false;
+            }
+
+            public void Dispose()
+            {
+                Dispose(disposing: true);
+                GC.SuppressFinalize(this);
             }
 
             protected virtual void Dispose(bool disposing)
@@ -256,25 +264,11 @@ namespace NetCoreTest.UI
                 {
                     if (disposing)
                     {
-                        vm.IsEnabled = true;
+                        vm.IsEnabled = prevValue;
                     }
 
                     isDisposed = true;
                 }
-            }
-
-            // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-            // ~UiLocker()
-            // {
-            //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            //     Dispose(disposing: false);
-            // }
-
-            public void Dispose()
-            {
-                // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-                Dispose(disposing: true);
-                GC.SuppressFinalize(this);
             }
         }
     }
