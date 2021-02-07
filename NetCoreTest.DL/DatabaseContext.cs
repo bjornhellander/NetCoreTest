@@ -4,6 +4,8 @@ namespace NetCoreTest.DL
 {
     public class DatabaseContext : DbContext
     {
+        public const string ConnectionString = "Server=(localdb)\\mssqllocaldb;Database=NetCoreTest;Trusted_Connection=True;MultipleActiveResultSets=true";
+
         //public DatabaseContext(DbContextOptions<DatabaseContext> options)
         //    : base(options)
         //{
@@ -17,7 +19,7 @@ namespace NetCoreTest.DL
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=NetCoreTest;Trusted_Connection=True;MultipleActiveResultSets=true");
+            options.UseSqlServer(ConnectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
