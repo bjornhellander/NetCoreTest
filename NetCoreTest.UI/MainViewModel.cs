@@ -14,6 +14,7 @@ namespace NetCoreTest.UI
         private readonly ICustomerRepositoryService customerRepositoryService;
         private readonly IOrderRepositoryService orderRepositoryService;
         private bool isEnabled = true;
+        private bool shouldInjectError = false;
 
         [Obsolete("Design-time constructor")]
         public MainViewModel()
@@ -52,6 +53,12 @@ namespace NetCoreTest.UI
         public ICommand GenerateCommand { get; }
 
         public ICommand ResetCommand { get; }
+
+        public bool ShouldInjectError
+        {
+            get => shouldInjectError;
+            set => SetProperty(ref shouldInjectError, value);
+        }
 
         private void AddDesignTimeData()
         {
@@ -158,7 +165,7 @@ namespace NetCoreTest.UI
 
                     var itemIndex = items.Select((x, i) => (x, i)).Single(y => y.x.Id == order.ItemId).i;
                     var newItemId = itemIds[itemIndex];
-                    order.ItemId = newItemId;
+                    order.ItemId = shouldInjectError ? int.MaxValue : newItemId; // !!!!!! CAN INJECT ERROR HERE !!!!!!
                 }
 
                 await orderRepositoryService.CreateOrdersAsync(orders);
