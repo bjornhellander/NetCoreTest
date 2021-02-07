@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using NetCoreTest.DL;
+﻿using NetCoreTest.DL;
 using NetCoreTest.DL.Customers;
 using NetCoreTest.DL.Items;
 using NetCoreTest.DL.Orders;
@@ -104,15 +103,11 @@ namespace NetCoreTest.UI
         private async Task DoLoadDataAsync()
         {
             using (WithUiLock())
+            using (var transaction = WithTransaction())
             {
-                using var connection = new SqlConnection(DatabaseContext.ConnectionString);
-                connection.Open();
-
-                using var transaction = connection.BeginTransaction();
-
-                var items = await itemRepositoryService.GetAllItemsAsync(connection, transaction);
-                var customers = await customerRepositoryService.GetAllCustomersAsync(connection, transaction);
-                var orders = await orderRepositoryService.GetAllOrdersAsync(connection, transaction);
+                var items = await itemRepositoryService.GetAllItemsAsync(transaction);
+                var customers = await customerRepositoryService.GetAllCustomersAsync(transaction);
+                var orders = await orderRepositoryService.GetAllOrdersAsync(transaction);
 
                 SetData(items, customers, orders);
             }
@@ -160,16 +155,12 @@ namespace NetCoreTest.UI
         private async Task DoGenerateDataAsync()
         {
             using (WithUiLock())
+            using (var transaction = WithTransaction())
             {
-                using var connection = new SqlConnection(DatabaseContext.ConnectionString);
-                connection.Open();
-
-                using var transaction = connection.BeginTransaction();
-
                 GetData(out var items, out var customers, out var orders);
 
-                var itemIds = await itemRepositoryService.CreateItemsAsync(connection, transaction, items);
-                var customerIds = await customerRepositoryService.CreateCustomersAsync(connection, transaction, customers);
+                var itemIds = await itemRepositoryService.CreateItemsAsync(transaction, items);
+                var customerIds = await customerRepositoryService.CreateCustomersAsync(transaction, customers);
 
                 foreach (var order in orders)
                 {
@@ -182,7 +173,7 @@ namespace NetCoreTest.UI
                     order.ItemId = shouldInjectError ? int.MaxValue : newItemId; // !!!!!! CAN INJECT ERROR HERE !!!!!!
                 }
 
-                await orderRepositoryService.CreateOrdersAsync(connection, transaction, orders);
+                await orderRepositoryService.CreateOrdersAsync(transaction, orders);
 
                 transaction.Commit();
             }
@@ -219,15 +210,11 @@ namespace NetCoreTest.UI
         private async Task DoResetDataAsync()
         {
             using (WithUiLock())
+            using (var transaction = WithTransaction())
             {
-                using var connection = new SqlConnection(DatabaseContext.ConnectionString);
-                connection.Open();
-
-                using var transaction = connection.BeginTransaction();
-
-                await orderRepositoryService.DeleteAllAsync(connection, transaction);
-                await customerRepositoryService.DeleteAllAsync(connection, transaction);
-                await itemRepositoryService.DeleteAllAsync(connection, transaction);
+                await orderRepositoryService.DeleteAllAsync(transaction);
+                await customerRepositoryService.DeleteAllAsync(transaction);
+                await itemRepositoryService.DeleteAllAsync(transaction);
 
                 transaction.Commit();
             }
@@ -235,8 +222,14 @@ namespace NetCoreTest.UI
 
         private UiLock WithUiLock()
         {
-            var uiLocker = new UiLock(this);
-            return uiLocker;
+            var uiLock = new UiLock(this);
+            return uiLock;
+        }
+
+        private Transaction WithTransaction()
+        {
+            var transaction = new Transaction();
+            return transaction;
         }
 
         private class UiLock : IDisposable

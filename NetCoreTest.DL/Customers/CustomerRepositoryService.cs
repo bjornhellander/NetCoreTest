@@ -8,9 +8,9 @@ namespace NetCoreTest.DL.Customers
 {
     public class CustomerRepositoryService : RepositoryServiceBase, ICustomerRepositoryService
     {
-        public Task<List<CustomerRepositoryData>> GetAllCustomersAsync(DbConnection connection, DbTransaction transaction)
+        public Task<List<CustomerRepositoryData>> GetAllCustomersAsync(Transaction transaction)
         {
-            using (var context = GetContext(connection, transaction))
+            using (var context = GetContext(transaction))
             {
                 var result = new List<CustomerRepositoryData>();
 
@@ -24,9 +24,9 @@ namespace NetCoreTest.DL.Customers
             }
         }
 
-        public async Task<List<int>> CreateCustomersAsync(DbConnection connection, DbTransaction transaction, List<CustomerRepositoryData> customers)
+        public async Task<List<int>> CreateCustomersAsync(Transaction transaction, List<CustomerRepositoryData> customers)
         {
-            using (var context = GetContext(connection, transaction))
+            using (var context = GetContext(transaction))
             {
                 var entities = new List<CustomerEntity>();
                 foreach (var customer in customers)
@@ -42,9 +42,9 @@ namespace NetCoreTest.DL.Customers
             }
         }
 
-        public async Task DeleteAllAsync(DbConnection connection, DbTransaction transaction)
+        public async Task DeleteAllAsync(Transaction transaction)
         {
-            using (var context = GetContext(connection, transaction))
+            using (var context = GetContext(transaction))
             {
                 var entities = context.Customers;
                 context.Customers.RemoveRange(entities);

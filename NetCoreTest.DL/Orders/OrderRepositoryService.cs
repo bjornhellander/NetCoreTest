@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,9 +6,9 @@ namespace NetCoreTest.DL.Orders
 {
     public class OrderRepositoryService : RepositoryServiceBase, IOrderRepositoryService
     {
-        public Task<List<OrderRepositoryData>> GetAllOrdersAsync(DbConnection connection, DbTransaction transaction)
+        public Task<List<OrderRepositoryData>> GetAllOrdersAsync(Transaction transaction)
         {
-            using (var context = GetContext(connection, transaction))
+            using (var context = GetContext(transaction))
             {
                 var result = new List<OrderRepositoryData>();
 
@@ -23,9 +22,9 @@ namespace NetCoreTest.DL.Orders
             }
         }
 
-        public async Task<List<int>> CreateOrdersAsync(DbConnection connection, DbTransaction transaction, List<OrderRepositoryData> orders)
+        public async Task<List<int>> CreateOrdersAsync(Transaction transaction, List<OrderRepositoryData> orders)
         {
-            using (var context = GetContext(connection, transaction))
+            using (var context = GetContext(transaction))
             {
                 var entities = new List<OrderEntity>();
                 foreach (var order in orders)
@@ -41,9 +40,9 @@ namespace NetCoreTest.DL.Orders
             }
         }
 
-        public async Task DeleteAllAsync(DbConnection connection, DbTransaction transaction)
+        public async Task DeleteAllAsync(Transaction transaction)
         {
-            using (var context = GetContext(connection, transaction))
+            using (var context = GetContext(transaction))
             {
                 var entities = context.Orders;
                 context.Orders.RemoveRange(entities);

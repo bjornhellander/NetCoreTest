@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace NetCoreTest.DL.Orders
 {
     public interface IOrderRepositoryService
     {
-        Task<List<OrderRepositoryData>> GetAllOrdersAsync(DbConnection connection, DbTransaction transaction);
+        Task<List<OrderRepositoryData>> GetAllOrdersAsync(Transaction transaction);
 
-        Task<List<int>> CreateOrdersAsync(DbConnection connection, DbTransaction transaction, List<OrderRepositoryData> orders);
+        Task<List<int>> CreateOrdersAsync(Transaction transaction, List<OrderRepositoryData> orders);
 
-        Task DeleteAllAsync(DbConnection connection, DbTransaction transaction);
+        Task DeleteAllAsync(Transaction transaction);
     }
 }

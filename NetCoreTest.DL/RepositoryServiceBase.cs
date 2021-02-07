@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Data.Common;
 
 namespace NetCoreTest.DL
 {
@@ -13,10 +12,10 @@ namespace NetCoreTest.DL
             return result;
         }
 
-        protected static DatabaseContext GetContext(DbConnection connection, DbTransaction transaction)
+        protected static DatabaseContext GetContext(Transaction transaction)
         {
-            var result = new DatabaseContext(connection);
-            result.Database.UseTransaction(transaction);
+            var result = new DatabaseContext(transaction.SqlConnection);
+            result.Database.UseTransaction(transaction.SqlTransaction);
             return result;
         }
     }
