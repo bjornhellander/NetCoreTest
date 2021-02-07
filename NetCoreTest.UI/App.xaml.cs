@@ -11,9 +11,9 @@ namespace NetCoreTest.UI
         private void OnStartup(object sender, StartupEventArgs e)
         {
             var transactionService = new TransactionService();
-            var itemRepositoryService = new ItemRepositoryService();
-            var customerRepositoryService = new CustomerRepositoryService();
-            var orderRepositoryService = new OrderRepositoryService();
+            var itemRepositoryService = new ItemRepositoryService(transactionService);
+            var customerRepositoryService = new CustomerRepositoryService(transactionService);
+            var orderRepositoryService = new OrderRepositoryService(transactionService);
 
             var mainViewModel = new MainViewModel(
                 transactionService,

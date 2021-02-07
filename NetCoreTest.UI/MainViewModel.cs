@@ -109,9 +109,9 @@ namespace NetCoreTest.UI
             using (WithUiLock())
             using (var transaction = await WithTransactionAsync())
             {
-                var items = await itemRepositoryService.GetAllItemsAsync(transaction);
-                var customers = await customerRepositoryService.GetAllCustomersAsync(transaction);
-                var orders = await orderRepositoryService.GetAllOrdersAsync(transaction);
+                var items = await itemRepositoryService.GetAllItemsAsync(transaction.Id);
+                var customers = await customerRepositoryService.GetAllCustomersAsync(transaction.Id);
+                var orders = await orderRepositoryService.GetAllOrdersAsync(transaction.Id);
 
                 SetData(items, customers, orders);
             }
@@ -163,8 +163,8 @@ namespace NetCoreTest.UI
             {
                 GetData(out var items, out var customers, out var orders);
 
-                var itemIds = await itemRepositoryService.CreateItemsAsync(transaction, items);
-                var customerIds = await customerRepositoryService.CreateCustomersAsync(transaction, customers);
+                var itemIds = await itemRepositoryService.CreateItemsAsync(transaction.Id, items);
+                var customerIds = await customerRepositoryService.CreateCustomersAsync(transaction.Id, customers);
 
                 foreach (var order in orders)
                 {
@@ -177,9 +177,9 @@ namespace NetCoreTest.UI
                     order.ItemId = shouldInjectError ? int.MaxValue : newItemId; // !!!!!! CAN INJECT ERROR HERE !!!!!!
                 }
 
-                await orderRepositoryService.CreateOrdersAsync(transaction, orders);
+                await orderRepositoryService.CreateOrdersAsync(transaction.Id, orders);
 
-                transaction.Commit();
+                transaction.CommitAsync();
             }
         }
 
@@ -216,11 +216,11 @@ namespace NetCoreTest.UI
             using (WithUiLock())
             using (var transaction = await WithTransactionAsync())
             {
-                await orderRepositoryService.DeleteAllAsync(transaction);
-                await customerRepositoryService.DeleteAllAsync(transaction);
-                await itemRepositoryService.DeleteAllAsync(transaction);
+                await orderRepositoryService.DeleteAllAsync(transaction.Id);
+                await customerRepositoryService.DeleteAllAsync(transaction.Id);
+                await itemRepositoryService.DeleteAllAsync(transaction.Id);
 
-                transaction.Commit();
+                transaction.CommitAsync();
             }
         }
 
@@ -232,7 +232,8 @@ namespace NetCoreTest.UI
 
         private async Task<Transaction> WithTransactionAsync()
         {
-            var transaction = await transactionService.StartAsync();
+            var transactionId = await transactionService.StartAsync();
+            var transaction = new Transaction(transactionService, transactionId);
             return transaction;
         }
 
@@ -262,6 +263,61 @@ namespace NetCoreTest.UI
                     if (disposing)
                     {
                         vm.IsEnabled = prevValue;
+                    }
+
+                    isDisposed = true;
+                }
+            }
+        }
+
+        private class Transaction : IDisposable
+        {
+            private readonly ITransactionService transactionService;
+            private readonly Guid transactionId;
+            private bool isDisposed = false;
+
+            public Transaction(ITransactionService transactionService, Guid transactionId)
+            {
+                this.transactionService = transactionService;
+                this.transactionId = transactionId;
+            }
+
+            public Guid Id
+            {
+                get
+                {
+                    if (isDisposed)
+                    {
+                        throw new InvalidOperationException("Transaction already disposed");
+                    }
+
+                    return transactionId;
+                }
+            }
+
+            public void CommitAsync()
+            {
+                if (isDisposed)
+                {
+                    throw new InvalidOperationException("Transaction already disposed");
+                }
+
+                transactionService.CommitAsync(transactionId);
+            }
+
+            public void Dispose()
+            {
+                Dispose(disposing: true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!isDisposed)
+                {
+                    if (disposing)
+                    {
+                        transactionService.StopAsync(transactionId);
                     }
 
                     isDisposed = true;

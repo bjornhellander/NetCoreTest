@@ -1,13 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace NetCoreTest.DL.Transactions
 {
     public interface ITransactionService
     {
-        Task<Transaction> StartAsync();
+        Task<Guid> StartAsync();
 
-        Task CommitAsync(Transaction transaction);
+        Task CommitAsync(Guid id);
 
-        Task StopAsync(Transaction transaction);
+        Task StopAsync(Guid id);
     }
 }

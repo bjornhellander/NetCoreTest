@@ -1,4 +1,5 @@
 ﻿using NetCoreTest.DL.Transactions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,9 +8,14 @@ namespace NetCoreTest.DL.Items
 {
     public class ItemRepositoryService : RepositoryServiceBase, IItemRepositoryService
     {
-        public Task<List<ItemRepositoryData>> GetAllItemsAsync(Transaction transaction)
+        public ItemRepositoryService(IInternalTransactionService transactionService)
+            : base(transactionService)
         {
-            using (var context = GetContext(transaction))
+        }
+
+        public Task<List<ItemRepositoryData>> GetAllItemsAsync(Guid transactionId)
+        {
+            using (var context = GetContext(transactionId))
             {
                 var result = new List<ItemRepositoryData>();
 
@@ -23,9 +29,9 @@ namespace NetCoreTest.DL.Items
             }
         }
 
-        public async Task<List<int>> CreateItemsAsync(Transaction transaction, List<ItemRepositoryData> items)
+        public async Task<List<int>> CreateItemsAsync(Guid transactionId, List<ItemRepositoryData> items)
         {
-            using (var context = GetContext(transaction))
+            using (var context = GetContext(transactionId))
             {
                 var entities = new List<ItemEntity>();
                 foreach (var item in items)
@@ -41,9 +47,9 @@ namespace NetCoreTest.DL.Items
             }
         }
 
-        public async Task DeleteAllAsync(Transaction transaction)
+        public async Task DeleteAllAsync(Guid transactionId)
         {
-            using (var context = GetContext(transaction))
+            using (var context = GetContext(transactionId))
             {
                 var entities = context.Items;
                 context.Items.RemoveRange(entities);

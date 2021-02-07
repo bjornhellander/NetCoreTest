@@ -3,13 +3,13 @@ using System;
 
 namespace NetCoreTest.DL.Transactions
 {
-    public class Transaction : IDisposable
+    public class InternalTransaction : IDisposable
     {
         public readonly SqlConnection SqlConnection;
         public readonly SqlTransaction SqlTransaction;
         private bool isDisposed = false;
 
-        public Transaction()
+        public InternalTransaction()
         {
             SqlConnection = new SqlConnection(DatabaseContext.ConnectionString);
             SqlConnection.Open();

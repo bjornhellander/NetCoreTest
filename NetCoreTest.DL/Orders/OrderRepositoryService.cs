@@ -1,4 +1,5 @@
 ﻿using NetCoreTest.DL.Transactions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,9 +8,14 @@ namespace NetCoreTest.DL.Orders
 {
     public class OrderRepositoryService : RepositoryServiceBase, IOrderRepositoryService
     {
-        public Task<List<OrderRepositoryData>> GetAllOrdersAsync(Transaction transaction)
+        public OrderRepositoryService(IInternalTransactionService transactionService)
+            : base(transactionService)
         {
-            using (var context = GetContext(transaction))
+        }
+
+        public Task<List<OrderRepositoryData>> GetAllOrdersAsync(Guid transactionId)
+        {
+            using (var context = GetContext(transactionId))
             {
                 var result = new List<OrderRepositoryData>();
 
@@ -23,9 +29,9 @@ namespace NetCoreTest.DL.Orders
             }
         }
 
-        public async Task<List<int>> CreateOrdersAsync(Transaction transaction, List<OrderRepositoryData> orders)
+        public async Task<List<int>> CreateOrdersAsync(Guid transactionId, List<OrderRepositoryData> orders)
         {
-            using (var context = GetContext(transaction))
+            using (var context = GetContext(transactionId))
             {
                 var entities = new List<OrderEntity>();
                 foreach (var order in orders)
@@ -41,9 +47,9 @@ namespace NetCoreTest.DL.Orders
             }
         }
 
-        public async Task DeleteAllAsync(Transaction transaction)
+        public async Task DeleteAllAsync(Guid transactionId)
         {
-            using (var context = GetContext(transaction))
+            using (var context = GetContext(transactionId))
             {
                 var entities = context.Orders;
                 context.Orders.RemoveRange(entities);
