@@ -99,7 +99,7 @@ namespace NetCoreTest.UI
 
         private async Task DoLoadDataAsync()
         {
-            using (LockUi())
+            using (WithUiLock())
             {
                 var items = await itemRepositoryService.GetAllItemsAsync();
                 var customers = await customerRepositoryService.GetAllCustomersAsync();
@@ -150,7 +150,7 @@ namespace NetCoreTest.UI
 
         private async Task DoGenerateDataAsync()
         {
-            using (LockUi())
+            using (WithUiLock())
             {
                 GetData(out var items, out var customers, out var orders);
 
@@ -202,7 +202,7 @@ namespace NetCoreTest.UI
 
         private async Task DoResetDataAsync()
         {
-            using (LockUi())
+            using (WithUiLock())
             {
                 await orderRepositoryService.DeleteAllAsync();
                 await customerRepositoryService.DeleteAllAsync();
@@ -210,7 +210,7 @@ namespace NetCoreTest.UI
             }
         }
 
-        private IDisposable LockUi()
+        private IDisposable WithUiLock()
         {
             var uiLocker = new UiLocker(this);
             return uiLocker;

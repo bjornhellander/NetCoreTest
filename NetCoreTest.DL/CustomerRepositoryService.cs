@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,7 +8,7 @@ namespace NetCoreTest.DL
     {
         public Task<List<CustomerRepositoryData>> GetAllCustomersAsync()
         {
-            using (var context = new DatabaseContext())
+            using (var context = GetContext())
             {
                 var result = new List<CustomerRepositoryData>();
 
@@ -25,7 +24,7 @@ namespace NetCoreTest.DL
 
         public async Task<List<int>> CreateCustomersAsync(List<CustomerRepositoryData> customers)
         {
-            using (var context = new DatabaseContext())
+            using (var context = GetContext())
             {
                 var entities = new List<CustomerEntity>();
                 foreach (var customer in customers)
@@ -43,12 +42,18 @@ namespace NetCoreTest.DL
 
         public async Task DeleteAllAsync()
         {
-            using (var context = new DatabaseContext())
+            using (var context = GetContext())
             {
                 var entities = context.Customers;
                 context.Customers.RemoveRange(entities);
                 await context.SaveChangesAsync();
             }
+        }
+
+        private static DatabaseContext GetContext()
+        {
+            var result = new DatabaseContext();
+            return result;
         }
     }
 }
