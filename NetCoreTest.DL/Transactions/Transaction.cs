@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System;
 
-namespace NetCoreTest.DL
+namespace NetCoreTest.DL.Transactions
 {
     public class Transaction : IDisposable
     {

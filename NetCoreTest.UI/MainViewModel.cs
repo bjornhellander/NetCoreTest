@@ -2,6 +2,7 @@
 using NetCoreTest.DL.Customers;
 using NetCoreTest.DL.Items;
 using NetCoreTest.DL.Orders;
+using NetCoreTest.DL.Transactions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +14,7 @@ namespace NetCoreTest.UI
 {
     public class MainViewModel : ViewModelBase
     {
+        private readonly ITransactionService transactionService;
         private readonly IItemRepositoryService itemRepositoryService;
         private readonly ICustomerRepositoryService customerRepositoryService;
         private readonly IOrderRepositoryService orderRepositoryService;
@@ -26,10 +28,12 @@ namespace NetCoreTest.UI
         }
 
         public MainViewModel(
+            ITransactionService transactionService,
             IItemRepositoryService itemRepositoryService,
             ICustomerRepositoryService customerRepositoryService,
             IOrderRepositoryService orderRepositoryService)
         {
+            this.transactionService = transactionService;
             this.itemRepositoryService = itemRepositoryService;
             this.customerRepositoryService = customerRepositoryService;
             this.orderRepositoryService = orderRepositoryService;
@@ -103,7 +107,7 @@ namespace NetCoreTest.UI
         private async Task DoLoadDataAsync()
         {
             using (WithUiLock())
-            using (var transaction = WithTransaction())
+            using (var transaction = await WithTransactionAsync())
             {
                 var items = await itemRepositoryService.GetAllItemsAsync(transaction);
                 var customers = await customerRepositoryService.GetAllCustomersAsync(transaction);
@@ -155,7 +159,7 @@ namespace NetCoreTest.UI
         private async Task DoGenerateDataAsync()
         {
             using (WithUiLock())
-            using (var transaction = WithTransaction())
+            using (var transaction = await WithTransactionAsync())
             {
                 GetData(out var items, out var customers, out var orders);
 
@@ -210,7 +214,7 @@ namespace NetCoreTest.UI
         private async Task DoResetDataAsync()
         {
             using (WithUiLock())
-            using (var transaction = WithTransaction())
+            using (var transaction = await WithTransactionAsync())
             {
                 await orderRepositoryService.DeleteAllAsync(transaction);
                 await customerRepositoryService.DeleteAllAsync(transaction);
@@ -226,9 +230,9 @@ namespace NetCoreTest.UI
             return uiLock;
         }
 
-        private Transaction WithTransaction()
+        private async Task<Transaction> WithTransactionAsync()
         {
-            var transaction = new Transaction();
+            var transaction = await transactionService.StartAsync();
             return transaction;
         }
 
