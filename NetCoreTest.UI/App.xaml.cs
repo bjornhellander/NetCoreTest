@@ -8,12 +8,16 @@ namespace NetCoreTest.UI
 {
     public partial class App : Application
     {
-        private void OnStartup(object sender, StartupEventArgs e)
+        private async void OnStartup(object sender, StartupEventArgs e)
         {
             var transactionService = new TransactionService();
             var itemRepositoryService = new ItemRepositoryService(transactionService);
             var customerRepositoryService = new CustomerRepositoryService(transactionService);
             var orderRepositoryService = new OrderRepositoryService(transactionService);
+
+            await itemRepositoryService.InitializeAsync();
+            await customerRepositoryService.InitializeAsync();
+            await orderRepositoryService.InitializeAsync();
 
             var mainViewModel = new MainViewModel(
                 transactionService,

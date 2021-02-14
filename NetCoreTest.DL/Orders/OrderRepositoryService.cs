@@ -1,4 +1,5 @@
-﻿using NetCoreTest.DL.Transactions;
+﻿using Microsoft.EntityFrameworkCore;
+using NetCoreTest.DL.Transactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,16 @@ namespace NetCoreTest.DL.Orders
 
                 return Task.FromResult(result);
             }
+        }
+
+        public Task InitializeAsync()
+        {
+            using (var context = GetContext())
+            {
+                context.Database.Migrate();
+            }
+
+            return Task.CompletedTask;
         }
 
         public async Task<List<int>> CreateOrdersAsync(Guid transactionId, List<OrderRepositoryData> orders)

@@ -13,7 +13,6 @@ namespace NetCoreTest.DL
             this.transactionService = transactionService;
         }
 
-        [Obsolete("Currently unused")]
         protected DatabaseContext GetContext()
         {
             var result = new DatabaseContext();
